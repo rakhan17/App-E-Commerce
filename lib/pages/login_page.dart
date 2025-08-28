@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'register_page.dart';
-import 'account_page.dart';
+// Hapus import 'account_page.dart' karena kita menggunakan named routes
 
-// 1.2.3: Setup Dasar Halaman Login (StatefulWidget)
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -11,15 +10,11 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin {
-  // 1.2.4: Menambahkan Form Key dan Controller
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
-  // State untuk fitur show/hide password
   bool _isPasswordVisible = false;
 
-  // Controller dan Animation untuk efek fade-in
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
@@ -45,40 +40,42 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     super.dispose();
   }
 
-  // 1.2.5 & 1.3.1: Membuat Tampilan Header dengan Logo
   Widget _buildHeader() {
     return Column(
       children: [
+        Image.asset(
+          'assets/PS.png',
+          height: 80,
+        ),
         const SizedBox(height: 24),
-        Text(
-          'Welcome Back',
+        const Text(
+          'Welcome to Primus Shop',
           style: TextStyle(
             fontSize: 26,
             fontWeight: FontWeight.bold,
-            color: Colors.grey[800],
+            color: Colors.white,
           ),
         ),
         const SizedBox(height: 8),
         Text(
-          'Login to Continue',
-          style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+          'Masuk untuk melanjutkan belanja.',
+          style: TextStyle(fontSize: 16, color: Colors.grey[400]),
           textAlign: TextAlign.center,
         ),
       ],
     );
   }
 
-  // 1.2.6: Membuat Input Email dengan Validasi
   Widget _buildEmailField() {
     return TextFormField(
       controller: _emailController,
+      cursorColor: Colors.white,
       keyboardType: TextInputType.emailAddress,
-      decoration: InputDecoration(
+      style: const TextStyle(color: Colors.white),
+      decoration: const InputDecoration(
         labelText: 'Email',
-        prefixIcon: const Icon(Icons.email_outlined),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        prefixIcon: Icon(Icons.email_outlined),
       ),
-      // 1.3.2: Tambahkan validasi form pada email
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'Email tidak boleh kosong';
@@ -91,19 +88,19 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     );
   }
 
-  // 1.2.7: Membuat Input Password dengan Validasi dan Show/Hide
   Widget _buildPasswordField() {
     return TextFormField(
       controller: _passwordController,
+      cursorColor: Colors.white,
       obscureText: !_isPasswordVisible,
+      style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: 'Password',
         prefixIcon: const Icon(Icons.lock_outline),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        // 1.3.3: Tambahkan fitur show/hide password
         suffixIcon: IconButton(
           icon: Icon(
             _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+            color: Colors.grey[400],
           ),
           onPressed: () {
             setState(() {
@@ -112,7 +109,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           },
         ),
       ),
-      // 1.3.2: Tambahkan validasi form pada password
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'Password tidak boleh kosong';
@@ -125,43 +121,41 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     );
   }
 
-  // 1.2.8: Membuat Tombol Login
   Widget _buildLoginButton() {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF6750a4),
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
         ),
         onPressed: () {
-          // Cek validasi form
           if (_formKey.currentState!.validate()) {
-            // Jika valid, arahkan ke halaman berikutnya (AccountPage)
-            Navigator.pushReplacement(
+            // PERUBAHAN: Menggunakan named route untuk navigasi
+            Navigator.pushReplacementNamed(
               context,
-              MaterialPageRoute(builder: (context) => const AccountPage()),
+              '/account',
+              arguments: {'email': _emailController.text},
             );
           }
         },
         child: const Text(
-          'Login',
-          style: TextStyle(
-              fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
+          'Masuk',
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
       ),
     );
   }
 
-  // 1.2.9: Membuat Link ke Halaman Sign Up (Register)
   Widget _buildSignupLink() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text("Don't have an account?"),
+        Text("Belum punya akun?", style: TextStyle(color: Colors.grey[400])),
         TextButton(
           onPressed: () {
             Navigator.push(
@@ -170,8 +164,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
             );
           },
           child: const Text(
-            'Sign Up',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            'Daftar di sini',
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
         ),
       ],
@@ -180,18 +174,15 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
-    // 1.2.3: Struktur dasar Scaffold
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Center(
-        // 1.2.10: Menggunakan SingleChildScrollView agar responsif
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
-          // 1.3.4: Menambahkan efek animasi
           child: FadeTransition(
             opacity: _fadeAnimation,
             child: Form(
               key: _formKey,
-              // 1.2.10: Menyatukan semua komponen dalam Column
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
